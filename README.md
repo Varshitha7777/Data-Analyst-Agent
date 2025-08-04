@@ -1,4 +1,4 @@
-🤖  Data Analyst Agent
+🤖 Universal Data Analyst Agent
 This project implements a web-based Universal Data Analyst Agent that allows users to analyze data from any public CSV URL by providing natural language tasks. The agent leverages a large language model (LLM) through the OpenRouter API to perform data analysis and generate structured results, including numerical answers, textual summaries, correlations, and even plotting data for client-side visualization.
 
 ✨ Features
