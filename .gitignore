@@ -1,0 +1,22 @@
+# Virtual environment
+venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+
+
+
+# Plot images or base64 outputs (if any)
+*.png
+*.jpg
+*.jpeg
+*.svg

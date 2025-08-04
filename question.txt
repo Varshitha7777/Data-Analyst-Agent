@@ -1,0 +1,22 @@
+You are a data analyst agent.
+
+Scrape the list of highest-grossing films from this Wikipedia URL:
+https://en.wikipedia.org/wiki/List_of_highest-grossing_films
+
+Answer the following 4 questions:
+
+1. How many films grossed over $2 billion before the year 2020?
+2. What is the earliest film that grossed over $1.5 billion?
+3. What is the Pearson correlation coefficient between Rank and Peak?
+4. Plot Rank (x-axis) vs Peak (y-axis) as a scatterplot with a **dotted red regression line**, and encode the image as a base64 PNG data URI.
+
+⚠️ Return your answer **strictly as a JSON array** with exactly 4 elements in this format:
+
+[
+  <integer>,          // answer to Q1
+  "<string>",         // answer to Q2
+  <float>,            // answer to Q3
+  "<base64_uri>"      // answer to Q4 (starts with "data:image/png;base64,")
+]
+
+Do not include any explanations, keys, markdown, or text. Just return a valid 4-element JSON array.

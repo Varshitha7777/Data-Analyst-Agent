@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Data Analyst Agent</title>
+  <style>
+    /* Global styles */
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif; /* Prioritize Inter, fallback to Segoe UI */
+      background: linear-gradient(to right, #6a11cb, #2575fc); /* Vibrant gradient background */
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Center content horizontally */
+      min-height: 100vh; /* Ensure body takes full viewport height */
+      box-sizing: border-box; /* Include padding in element's total width and height */
+    }
+
+    /* Main container for content */
+    .container {
+      max-width: 800px;
+      width: 100%; /* Make container responsive */
+      margin: auto; /* Center container */
+      padding: 40px 20px;
+    }
+
+    /* Main heading */
+    h1 {
+      font-size: 2.8em; /* Larger, more prominent heading */
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Subtle text shadow */
+    }
+
+    /* Subtitle/description */
+    p {
+      font-size: 1.1em;
+      margin-top: -10px;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+
+    /* Input group styling */
+    .input-group {
+      background: #fff;
+      padding: 25px; /* More padding */
+      border-radius: 15px; /* More rounded corners */
+      color: #333;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+      margin-bottom: 30px;
+      text-align: left; /* Align labels/inputs to left within the group */
+    }
+
+    /* Labels for inputs */
+    .input-group label {
+      display: block; /* Each label on its own line */
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #555;
+      font-size: 1.1em;
+    }
+
+    /* Input fields and textareas */
+    .input-group input[type="url"],
+    .input-group input[type="text"],
+    .input-group textarea {
+      width: calc(100% - 22px); /* Account for padding and border */
+      padding: 12px; /* More padding */
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px; /* Rounded corners */
+      font-size: 1em;
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box; /* Include padding in width */
+      transition: border-color 0.3s ease;
+    }
+    .input-group input:focus,
+    .input-group textarea:focus {
+      border-color: #2575fc; /* Highlight on focus */
+      outline: none;
+    }
+    .input-group textarea {
+      min-height: 80px; /* Minimum height for textarea */
+      resize: vertical; /* Allow vertical resizing */
+    }
+
+    /* Task row layout */
+    .task-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .task-row input {
+      flex: 1;
+      margin-bottom: 0; /* Remove bottom margin for flex item */
+    }
+
+    /* Remove task button */
+    .task-row button {
+      background: #ff4d4f; /* Red for remove */
+      color: #fff;
+      border: none;
+      padding: 8px 15px; /* More padding */
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .task-row button:hover {
+      background: #e60000;
+      transform: translateY(-1px);
+    }
+
+    /* Add task button */
+    #add-task-btn {
+      background: #00c853; /* Green for add */
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 10px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #add-task-btn:hover {
+      background: #00a044;
+      transform: translateY(-2px);
+    }
+
+    /* Analyze button */
+    #analyze-btn {
+      background: #2575fc; /* Blue for analyze */
+      border: none;
+      color: #fff;
+      padding: 15px 30px; /* Larger, more prominent button */
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+    #analyze-btn:hover {
+      background: #1a5bbd;
+      transform: translateY(-3px);
+    }
+    #analyze-btn:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    /* Results section */
+    #results {
+      margin-top: 30px;
+      text-align: left;
+      background: #fff;
+      color: #333;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      white-space: pre-wrap;
+      width: 100%;
+      max-width: 800px;
+      box-sizing: border-box;
+    }
+    #results h2 {
+      color: #2575fc;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+    }
+    #results p {
+      margin-bottom: 10px;
+      color: #444;
+      font-size: 1em;
+    }
+    #results strong {
+      color: #000;
+    }
+    /* Canvas for Chart.js */
+    #myChart {
+      background-color: #f8f8f8; /* Light background for chart area */
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-top: 20px;
+      max-width: 100%; /* Ensure responsiveness */
+      height: auto;
+    }
+
+    /* Loading/Error messages */
+    .loading-message, .error-message {
+      text-align: center;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .loading-message {
+      background: #e0f7fa;
+      color: #00796b;
+    }
+    .error-message {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    /* Custom alert box styling */
+    .custom-alert {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ffdddd;
+      border: 1px solid #ff0000;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      text-align: center;
+      font-size: 1.1em;
+      color: #d8000c;
+      animation: fadeInOut 5s forwards;
+    }
+
+    /* Fade in/out animation for alert */
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      .container {
+        padding: 20px 15px;
+      }
+      h1 {
+        font-size: 2.2em;
+      }
+      p {
+        font-size: 1em;
+      }
+      .input-group {
+        padding: 15px;
+        border-radius: 10px;
+      }
+      .input-group label {
+        font-size: 1em;
+      }
+      .input-group input,
+      .input-group textarea {
+        padding: 10px;
+        font-size: 0.95em;
+      }
+      #analyze-btn {
+        padding: 12px 25px;
+        font-size: 1.1em;
+      }
+      #results {
+        padding: 15px;
+        border-radius: 10px;
+      }
+      #results h2 {
+        font-size: 1.3em;
+      }
+    }
+  </style>
+  <!-- Chart.js CDN for plotting -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1> Data Analyst Agent</h1>
+    <p>Analyze any dataset directly from a URL</p>
+
+    <div class="input-group">
+      <label for="url-input">🔗 Dataset URL</label>
+      <input type="url" id="url-input" placeholder="https://example.com/data.csv" value="https://raw.githubusercontent.com/plotly/datasets/master/iris-data.csv" />
+
+      <label>🧠 Analysis Tasks</label>
+      <div id="task-container">
+        <div class="task-row">
+          <input type="text" placeholder="E.g. What is the average sales?" class="task-input" />
+          <button type="button" onclick="removeTask(this)">Remove</button>
+        </div>
+      </div>
+      <button type="button" id="add-task-btn" onclick="addTask()">+ Add Task</button>
+    </div>
+
+    <button type="button" id="analyze-btn" onclick="analyze()">📊 Analyze</button>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    let myChartInstance = null; // To store the Chart.js instance for destruction
+
+    // Function to add a new task input row
+    function addTask() {
+      const taskContainer = document.getElementById('task-container');
+      const newTask = document.createElement('div');
+      newTask.className = 'task-row';
+      newTask.innerHTML = `
+        <input type="text" placeholder="Enter analysis task" class="task-input" />
+        <button type="button" onclick="removeTask(this)">Remove</button>
+      `;
+      taskContainer.appendChild(newTask);
+    }
+
+    // Function to remove a task input row
+    function removeTask(button) {
+      button.parentElement.remove();
+    }
+
+    // Function to display a custom alert message (non-blocking)
+    function showAlert(message) {
+      const alertBox = document.createElement('div');
+      alertBox.className = 'custom-alert';
+      alertBox.textContent = message;
+      document.body.appendChild(alertBox);
+
+      setTimeout(() => {
+        alertBox.remove();
+      }, 5000); // Remove after 5 seconds
+    }
+
+    // Function to render the chart using Chart.js
+    function renderChart(chartData) {
+      const resultsDiv = document.getElementById("results");
+      // Append a canvas element for the chart
+      resultsDiv.innerHTML += `
+        <h2>📈 Visualization:</h2>
+        <canvas id="myChart"></canvas>
+      `;
+
+      const ctx = document.getElementById('myChart').getContext('2d');
+
+      // Destroy existing chart instance if it exists to prevent memory leaks and redraw issues
+      if (myChartInstance) {
+        myChartInstance.destroy();
+      }
+
+      // Basic validation for chartData format
+      if (!chartData || !Array.isArray(chartData) || chartData.length === 0 || !('x' in chartData[0] && 'y' in chartData[0])) {
+        resultsDiv.innerHTML += '<p class="error-message">❌ No valid plotting data received or data format is incorrect for scatter plot.</p>';
+        return;
+      }
+
+      // Create a new Chart.js instance
+      myChartInstance = new Chart(ctx, {
+        type: 'scatter', // Scatter plot type
+        data: {
+          datasets: [{
+            label: 'Data Points',
+            data: chartData,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)', // Point color
+            borderColor: 'rgba(75, 192, 192, 1)', // Point border color
+            borderWidth: 1,
+            pointRadius: 5, // Size of points
+            pointHoverRadius: 7 // Size of points on hover
+          }]
+        },
+        options: {
+          responsive: true, // Chart will resize with its container
+          maintainAspectRatio: true, // Maintain the aspect ratio
+          aspectRatio: 2, // Width to height ratio (e.g., 2:1)
+          scales: {
+            x: {
+              type: 'linear', // Linear scale for numerical data
+              position: 'bottom',
+              title: {
+                display: true,
+                text: 'X-axis (e.g., Petal Length)' // Placeholder title, could be dynamic from LLM
+              }
+            },
+            y: {
+              type: 'linear',
+              title: {
+                display: true,
+                text: 'Y-axis (e.g., Petal Width)' // Placeholder title, could be dynamic from LLM
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  // Custom tooltip label to show x and y values
+                  return `(${context.parsed.x}, ${context.parsed.y})`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Main analysis function triggered by the button
+    async function analyze() {
+      const url = document.getElementById('url-input').value.trim();
+      const tasks = Array.from(document.querySelectorAll('.task-input'))
+        .map(el => el.value.trim())
+        .filter(Boolean); // Filter out empty task strings
+
+      // Basic input validation
+      if (!url) {
+        showAlert("Please enter a dataset URL.");
+        return;
+      }
+      if (tasks.length === 0) {
+        showAlert("Please add at least one analysis task.");
+        return;
+      }
+
+      const analyzeButton = document.getElementById("analyze-btn");
+      const resultsDiv = document.getElementById("results");
+
+      // --- UI State Management: Before Fetch ---
+      analyzeButton.disabled = true;
+      analyzeButton.textContent = "📊 Analyzing...";
+      resultsDiv.innerHTML = `<p class="loading-message">⏳ Please wait, fetching and analyzing data...</p>`; // Show loading message
+
+      // Destroy previous chart if it exists to clean up before new analysis
+      if (myChartInstance) {
+        myChartInstance.destroy();
+        myChartInstance = null;
+      }
+
+      try {
+        // Explicitly target the FastAPI endpoint on port 8000
+        const res = await fetch("http://localhost:8000/api/url/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ url, tasks }) // Send URL and tasks as JSON
+        });
+
+        // Check for HTTP errors (e.g., 404, 500)
+        if (!res.ok) {
+          let errorDetail = "An unexpected error occurred.";
+          try {
+            const errData = await res.json();
+            errorDetail = errData.detail || errorDetail;
+          } catch (jsonErr) {
+            errorDetail = `HTTP error! Status: ${res.status} - ${res.statusText}`;
+          }
+          throw new Error(errorDetail);
+        }
+
+        // Parse the JSON response from the backend
+        const responseData = await res.json();
+
+        // The backend is expected to return a 4-element array:
+        // [numeric_result, string_summary, correlation_value, plotting_data]
+        if (Array.isArray(responseData) && responseData.length === 4) {
+          const [numeric_result, string_summary, correlation_value, plotting_data] = responseData;
+
+          // Update the results div with the parsed data (excluding visualization initially)
+          resultsDiv.innerHTML = `
+            <h2>📊 Analysis Results:</h2>
+            <p><strong>1️⃣ Numeric Answer:</strong> ${numeric_result !== null ? numeric_result : 'N/A'}</p>
+            <p><strong>2️⃣ String Summary:</strong> ${string_summary || 'N/A'}</p>
+            <p><strong>3️⃣ Correlation/Value:</strong> ${correlation_value !== null ? correlation_value : 'N/A'}</p>
+          `;
+
+          // Render the chart if plotting_data is available and valid
+          if (plotting_data && (Array.isArray(plotting_data) || typeof plotting_data === 'object')) {
+            renderChart(plotting_data);
+          } else {
+            resultsDiv.innerHTML += '<p>No valid visualization data provided by the agent.</p>';
+          }
+
+        } else {
+          // Handle cases where the backend response is not the expected 4-element array
+          throw new Error("Unexpected data format from the backend. Expected a 4-element array.");
+        }
+
+      } catch (err) {
+        // --- Error Handling ---
+        console.error("Analysis Error:", err);
+        resultsDiv.innerHTML = `<p class="error-message">❌ Error: ${err.message}</p>`;
+        showAlert(`Error during analysis: ${err.message}`);
+      } finally {
+        analyzeButton.disabled = false;
+        analyzeButton.textContent = "📊 Analyze";
+      }
+    }
+  </script>
+</body>
+</html>
